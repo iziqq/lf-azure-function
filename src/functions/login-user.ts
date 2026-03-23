@@ -5,7 +5,7 @@ import { loginService } from "../domains/users/auth/login/login.service";
 import { withSeatId } from "../domains/seats/seat.middleware";
 import { initI18n } from "../core/i18n/i18n";
 
-export async function login(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+export async function loginUser(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     context.log(`Http function processed request for url "${request.url}"`);
     const t = await initI18n();
 
@@ -35,8 +35,9 @@ export async function login(request: HttpRequest, context: InvocationContext): P
     };
 };
 
-app.http('login', {
+app.http('login-user', {
     methods: ['POST'],
     authLevel: 'anonymous',
-    handler: (request, context) => withSeatId(request, context, login)
+    route: 'auth/login',
+    handler: (request, context) => withSeatId(request, context, loginUser)
 });

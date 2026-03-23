@@ -27,6 +27,58 @@ To obtain or register a `SeatId` (which must be a GUID), use the following endpo
   ```
 - **Response**: `201 Created` with the registered SeatId.
 
+### User Authentication and Registration
+
+All authentication endpoints are under the `/api/auth/` prefix.
+
+#### User Registration
+To register a new user, use the following endpoint:
+
+- **Endpoint**: `POST /api/auth/register`
+- **Body**:
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "your-password",
+    "firstName": "John",
+    "lastName": "Doe",
+    "language": "en-US"
+  }
+  ```
+- **Response**: `201 Created` with the `userId`. An email with a verification link will be sent to the user.
+
+#### User Email Verification
+After registration, the user must verify their email. The system sends a link in the following format:
+
+- **Endpoint**: `GET /api/auth/registration/verify?userId=<userId>`
+- **Response**: `200 OK` upon successful verification.
+
+#### User Login
+To initiate the login process:
+
+- **Endpoint**: `POST /api/auth/login`
+- **Body**:
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "your-password"
+  }
+  ```
+- **Response**: `200 OK` with a message that a 2FA code has been sent (simulated in logs).
+
+#### Login 2FA Verification
+To complete the login process using the 2FA code:
+
+- **Endpoint**: `POST /api/auth/login/2fa/verify`
+- **Body**:
+  ```json
+  {
+    "email": "user@example.com",
+    "code": "123456"
+  }
+  ```
+- **Response**: `200 OK` with user details.
+
 ### Request Tracking
 The system automatically tracks the number of requests made with each `SeatId`.
 

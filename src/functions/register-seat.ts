@@ -42,7 +42,7 @@ export async function registerSeat(request: HttpRequest, context: InvocationCont
     }
 };
 
-app.http('registerSeat', {
+app.http('register-seat', {
     methods: ['POST'],
     authLevel: 'anonymous',
     route: 'seats/register',

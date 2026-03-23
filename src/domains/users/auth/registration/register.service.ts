@@ -39,7 +39,7 @@ export class RegisterService {
         context.log(t.t("auth.registration.user_created", { email: createdUser?.email }));
 
         // Odeslání ověřovacího e-mailu
-        const verificationLink = `${requestUrl.replace('/register', '/verify')}?userId=${createdUser?.id}`;
+        const verificationLink = `${requestUrl.replace('/auth/register', '/auth/registration/verify')}?userId=${createdUser?.id}`;
         await sendEmail({
             to: createdUser?.email!,
             subject: t.t("auth.registration.verification_email_subject"),

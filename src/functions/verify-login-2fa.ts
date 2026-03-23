@@ -5,7 +5,7 @@ import { loginService } from "../domains/users/auth/login/login.service";
 import { withSeatId } from "../domains/seats/seat.middleware";
 import { initI18n } from "../core/i18n/i18n";
 
-export async function verify2fa(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+export async function verifyLogin2fa(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     context.log(`Http function processed request for url "${request.url}"`);
     const t = await initI18n();
 
@@ -47,8 +47,9 @@ export async function verify2fa(request: HttpRequest, context: InvocationContext
     }
 };
 
-app.http('verify-2fa', {
+app.http('verify-login-2fa', {
     methods: ['POST'],
     authLevel: 'anonymous',
-    handler: (request, context) => withSeatId(request, context, verify2fa)
+    route: 'auth/login/2fa/verify',
+    handler: (request, context) => withSeatId(request, context, verifyLogin2fa)
 });

@@ -52,7 +52,7 @@ describe('RegisterService', () => {
             id: 'uuid-123', email: data.email
         });
 
-        const result = await registerService.register(data as any, 'http://localhost:7071/api/register', mockContext);
+        const result = await registerService.register(data as any, 'http://localhost:7071/api/auth/register', mockContext);
 
         expect(result.userId).toBe('uuid-123');
         expect(result.message).toBe('auth.registration.success');
@@ -71,7 +71,7 @@ describe('RegisterService', () => {
 
         (userRepository.findByEmail as jest.Mock).mockResolvedValue({ id: 'x', email: data.email });
 
-        await expect(registerService.register(data as any, 'http://localhost:7071/api/register', mockContext))
+        await expect(registerService.register(data as any, 'http://localhost:7071/api/auth/register', mockContext))
             .rejects.toHaveProperty('name', 'DuplicateEmailError');
         expect(userRepository.create).not.toHaveBeenCalled();
     });
@@ -86,7 +86,7 @@ describe('RegisterService', () => {
 
         (userRepository.create as jest.Mock).mockRejectedValue(new Error('DB Error'));
 
-        await expect(registerService.register(data as any, 'http://localhost:7071/api/register', mockContext))
+        await expect(registerService.register(data as any, 'http://localhost:7071/api/auth/register', mockContext))
             .rejects.toThrow('DB Error');
     });
 });

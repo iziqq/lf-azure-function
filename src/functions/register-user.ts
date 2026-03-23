@@ -5,7 +5,7 @@ import { initI18n } from "../core/i18n/i18n";
 import { registerService } from "../domains/users/auth/registration/register.service";
 import { withSeatId } from "../domains/seats/seat.middleware";
 
-export async function register(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+export async function registerUser(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     context.log(`Http function processed request for url "${request.url}"`);
 
     const t = await initI18n();
@@ -59,8 +59,9 @@ export async function register(request: HttpRequest, context: InvocationContext)
     }
 };
 
-app.http('register', {
+app.http('register-user', {
     methods: ['POST'],
     authLevel: 'anonymous',
-    handler: (request, context) => withSeatId(request, context, register)
+    route: 'auth/register',
+    handler: (request, context) => withSeatId(request, context, registerUser)
 });
