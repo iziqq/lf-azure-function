@@ -21,6 +21,24 @@
       "short_password": "Heslo musí mít alespoň 6 znaků",
       "short_firstName": "Jméno je příliš krátké",
       "short_lastName": "Příjmení je příliš krátké"
+    },
+    "login": {
+      "invalid_data": "Neplatná data požadavku.",
+      "blocked": "Uživatel je blokován do {{blockedUntil}}.",
+      "invalid_credentials": "Neplatné přihlašovací údaje nebo neověřený uživatel.",
+      "initial_success": "První krok přihlášení úspěšný. Vyžadováno 2FA.",
+      "invalid_session": "Neplatná relace.",
+      "code_expired": "2FA kód vypršel.",
+      "invalid_code": "Neplatný 2FA kód. Zbývající pokusy: {{attempts}}",
+      "too_many_attempts": "Příliš mnoho neúspěšných pokusů. Uživatel je blokován na 30 minut.",
+      "success": "Přihlášení úspěšné.",
+      "error": "Při ověřování 2FA kódu došlo k chybě."
+    },
+    "seat": {
+      "invalid_data": "Neplatná data požadavku.",
+      "registration_success": "SeatId úspěšně zaregistrováno.",
+      "registration_error": "Chyba při registraci SeatId.",
+      "missing_or_invalid": "Chybějící nebo neplatné SeatId v hlavičce x-seat-id."
     }
   }
 }

@@ -21,6 +21,24 @@
       "short_password": "Password must be at least 6 characters long",
       "short_firstName": "First name is too short",
       "short_lastName": "Last name is too short"
+    },
+    "login": {
+      "invalid_data": "Invalid request data.",
+      "blocked": "User is blocked until {{blockedUntil}}.",
+      "invalid_credentials": "Invalid credentials or user not verified.",
+      "initial_success": "Login initial success. 2FA required.",
+      "invalid_session": "Invalid session.",
+      "code_expired": "2FA code expired.",
+      "invalid_code": "Invalid 2FA code. Remaining attempts: {{attempts}}",
+      "too_many_attempts": "Too many failed attempts. User is blocked for 30 minutes.",
+      "success": "Login successful.",
+      "error": "Error during 2FA verification."
+    },
+    "seat": {
+      "invalid_data": "Invalid request data.",
+      "registration_success": "SeatId registered successfully.",
+      "registration_error": "Error registering SeatId.",
+      "missing_or_invalid": "Missing or invalid SeatId in x-seat-id header."
     }
   }
 }

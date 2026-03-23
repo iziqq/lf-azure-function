@@ -2,9 +2,12 @@ import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/fu
 import { parseEntity } from "../core/parser/entity-parser";
 import { Verify2faRequestSchema } from "../domains/users/auth/login/dto/verify-2fa.request";
 import { loginService } from "../domains/users/auth/login/login.service";
+import { withSeatId } from "../domains/seats/seat.middleware";
+import { initI18n } from "../core/i18n/i18n";
 
 export async function verify2fa(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     context.log(`Http function processed request for url "${request.url}"`);
+    const t = await initI18n();
 
     const body = await request.json() as any;
     const parseResult = parseEntity(body, Verify2faRequestSchema);
@@ -13,14 +16,18 @@ export async function verify2fa(request: HttpRequest, context: InvocationContext
         return {
             status: 400,
             jsonBody: {
-                message: "Neplatná data požadavku.",
-                errors: parseResult.issues
+                message: t.t("auth.login.invalid_data"),
+                errors: parseResult.issues.map(issue => ({
+                    ...issue,
+                    message: t.t(issue.message)
+                }))
             }
         };
     }
 
     try {
-        const result = await loginService.verify2fa(parseResult.value, context);
+        const seatId = request.headers.get('x-seat-id');
+        const result = await loginService.verify2fa(parseResult.value, context, seatId);
 
         return {
             status: result.status,
@@ -34,7 +41,7 @@ export async function verify2fa(request: HttpRequest, context: InvocationContext
         return {
             status: 500,
             jsonBody: {
-                message: "Při ověřování 2FA kódu došlo k chybě."
+                message: t.t("auth.login.error")
             }
         };
     }
@@ -43,5 +50,5 @@ export async function verify2fa(request: HttpRequest, context: InvocationContext
 app.http('verify-2fa', {
     methods: ['POST'],
     authLevel: 'anonymous',
-    handler: verify2fa
+    handler: (request, context) => withSeatId(request, context, verify2fa)
 });

@@ -1,6 +1,7 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { initI18n } from "../core/i18n/i18n";
 import { registerService } from "../domains/users/auth/registration/register.service";
+import { withSeatId } from "../domains/seats/seat.middleware";
 
 export async function verify(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     context.log(`Verification function processed request for url "${request.url}"`);
@@ -40,5 +41,5 @@ export async function verify(request: HttpRequest, context: InvocationContext): 
 app.http('verify', {
     methods: ['GET'],
     authLevel: 'anonymous',
-    handler: verify
+    handler: (request, context) => withSeatId(request, context, verify)
 });

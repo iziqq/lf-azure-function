@@ -2,9 +2,12 @@ import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/fu
 import { parseEntity } from "../core/parser/entity-parser";
 import { LoginRequestSchema } from "../domains/users/auth/login/dto/login.request";
 import { loginService } from "../domains/users/auth/login/login.service";
+import { withSeatId } from "../domains/seats/seat.middleware";
+import { initI18n } from "../core/i18n/i18n";
 
 export async function login(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     context.log(`Http function processed request for url "${request.url}"`);
+    const t = await initI18n();
 
     const body = await request.json() as any;
     const parseResult = parseEntity(body, LoginRequestSchema);
@@ -13,8 +16,11 @@ export async function login(request: HttpRequest, context: InvocationContext): P
         return {
             status: 400,
             jsonBody: {
-                message: "Neplatná data požadavku.",
-                errors: parseResult.issues
+                message: t.t("auth.login.invalid_data"),
+                errors: parseResult.issues.map(issue => ({
+                    ...issue,
+                    message: t.t(issue.message)
+                }))
             }
         };
     }
@@ -32,5 +38,5 @@ export async function login(request: HttpRequest, context: InvocationContext): P
 app.http('login', {
     methods: ['POST'],
     authLevel: 'anonymous',
-    handler: login
+    handler: (request, context) => withSeatId(request, context, login)
 });

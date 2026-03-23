@@ -3,6 +3,7 @@ import { parseEntity } from "../core/parser/entity-parser";
 import { RegisterRequestSchema } from "../domains/users/auth/registration/dto/register.request";
 import { initI18n } from "../core/i18n/i18n";
 import { registerService } from "../domains/users/auth/registration/register.service";
+import { withSeatId } from "../domains/seats/seat.middleware";
 
 export async function register(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     context.log(`Http function processed request for url "${request.url}"`);
@@ -61,5 +62,5 @@ export async function register(request: HttpRequest, context: InvocationContext)
 app.http('register', {
     methods: ['POST'],
     authLevel: 'anonymous',
-    handler: register
+    handler: (request, context) => withSeatId(request, context, register)
 });

@@ -6,9 +6,32 @@ This project is an implementation of Azure Functions for user authentication and
 - User registration (with duplicate email check).
 - User email verification (simulated via logging).
 - Login with two-factor authentication (2FA).
+- **SeatId Management**: Registration and tracking of requests per seat.
+- **Automatic User-to-Seat Mapping**: Linking authenticated users to their SeatId.
 - Localization support (CS, EN) using i18next.
 - Secure password storage using bcrypt.
 - User role management (Admin, Customer).
+
+## SeatId
+Every request to the API (except for SeatId registration) must include a valid `x-seat-id` header. Without this header or with an invalid ID, the request will be rejected (401 Unauthorized).
+
+### Registering a SeatId
+To obtain or register a `SeatId` (which must be a GUID), use the following endpoint:
+
+- **Endpoint**: `POST /api/seats/register`
+- **Body**:
+  ```json
+  {
+    "seatId": "your-guid-here"
+  }
+  ```
+- **Response**: `201 Created` with the registered SeatId.
+
+### Request Tracking
+The system automatically tracks the number of requests made with each `SeatId`.
+
+### User Assignment
+When a user successfully completes the 2FA login process, their `UserId` is automatically assigned to the current `SeatId` in the database.
 
 ## Requirements
 - [Node.js](https://nodejs.org/) (version 18 or newer)

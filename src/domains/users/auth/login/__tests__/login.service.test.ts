@@ -3,6 +3,7 @@ import { userRepository } from '../../../user.repository';
 import { authRepository } from '../../auth.repository';
 import { comparePassword } from '../../../../../core/auth/password-utils';
 import { InvocationContext } from '@azure/functions';
+import { seatService } from '../../../../seats/seat.service';
 
 jest.mock('../../../user.repository', () => ({
     userRepository: {
@@ -20,6 +21,12 @@ jest.mock('../../auth.repository', () => ({
 
 jest.mock('../../../../../core/auth/password-utils', () => ({
     comparePassword: jest.fn()
+}));
+
+jest.mock('../../../../seats/seat.service', () => ({
+    seatService: {
+        assignUserToSeat: jest.fn()
+    }
 }));
 
 describe('LoginService', () => {
@@ -76,6 +83,27 @@ describe('LoginService', () => {
             expect(result.status).toBe(401);
             expect(authRepository.create).not.toHaveBeenCalled();
         });
+
+        it('should update existing session if one exists and is inactive', async () => {
+            const data = { email: 'test@example.com', password: 'password123' };
+            const mockUser = { id: 'u1', email: 'test@example.com', passwordHash: 'h', isVerified: true };
+            const existingSession = { id: 's1', email: 'test@example.com', isActive: false, attempts: 2 };
+
+            (userRepository.findByEmail as jest.Mock).mockResolvedValue(mockUser);
+            (comparePassword as jest.Mock).mockResolvedValue(true);
+            (authRepository.findActiveByEmail as jest.Mock).mockResolvedValue(existingSession);
+            (authRepository.update as jest.Mock).mockResolvedValue({});
+
+            const result = await loginService.login(data as any, mockContext);
+
+            expect(result.status).toBe(200);
+            expect(authRepository.update).toHaveBeenCalledWith('s1', expect.objectContaining({
+                attempts: 5,
+                id: 's1'
+            }));
+            expect(authRepository.create).not.toHaveBeenCalled();
+            expect(mockContext.log).toHaveBeenCalledWith(expect.stringContaining('Aktualizována stávající session'));
+        });
     });
 
     describe('verify2fa', () => {
@@ -97,6 +125,29 @@ describe('LoginService', () => {
             expect(result.status).toBe(200);
             expect(result.token).toBeDefined();
             expect(authRepository.update).toHaveBeenCalled();
+        });
+
+        it('should verify 2FA successfully and assign SeatId if provided', async () => {
+            const data = { email: 'test@example.com', code: '123456' };
+            const seatId = 'seat-456';
+            const mockSession = {
+                id: 'session-123',
+                userId: 'user-123',
+                email: 'test@example.com',
+                code2fa: '123456',
+                isActive: false,
+                expiresAt: new Date(Date.now() + 10000).toISOString()
+            };
+
+            (authRepository.findActiveByEmail as jest.Mock).mockResolvedValue(mockSession);
+            (authRepository.update as jest.Mock).mockResolvedValue({});
+            (seatService.assignUserToSeat as jest.Mock).mockResolvedValue(undefined);
+
+            const result = await loginService.verify2fa(data as any, mockContext, seatId);
+
+            expect(result.status).toBe(200);
+            expect(seatService.assignUserToSeat).toHaveBeenCalledWith(seatId, mockSession.userId);
+            expect(mockContext.log).toHaveBeenCalledWith(expect.stringContaining('Assigned UserId'));
         });
 
         it('should return 401 if session not found', async () => {
