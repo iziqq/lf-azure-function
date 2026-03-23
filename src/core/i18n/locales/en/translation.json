@@ -1,0 +1,26 @@
+{
+  "auth": {
+    "registration": {
+      "success": "User was successfully registered.",
+      "error": "An error occurred during user registration.",
+      "invalid_data": "Invalid request data.",
+      "user_created": "User successfully created: {{email}}",
+      "saving_error": "Error while saving user: {{error}}",
+      "email_exists": "A user with this email already exists.",
+      "verification_email_subject": "Email Verification",
+      "verification_email_body": "Hello, thank you for registering. Please click the link to verify your email: {{link}}",
+      "verification": {
+        "success": "Your email has been successfully verified.",
+        "not_found": "User was not found.",
+        "already_verified": "Your email has already been verified.",
+        "error": "An error occurred during email verification."
+      }
+    },
+    "validation": {
+      "invalid_email": "Invalid email format",
+      "short_password": "Password must be at least 6 characters long",
+      "short_firstName": "First name is too short",
+      "short_lastName": "Last name is too short"
+    }
+  }
+}

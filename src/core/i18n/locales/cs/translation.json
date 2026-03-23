@@ -1,0 +1,26 @@
+{
+  "auth": {
+    "registration": {
+      "success": "Uživatel byl úspěšně zaregistrován.",
+      "error": "Došlo k chybě při registraci uživatele.",
+      "invalid_data": "Neplatná data požadavku.",
+      "user_created": "Uživatel úspěšně vytvořen: {{email}}",
+      "saving_error": "Chyba při ukládání uživatele: {{error}}",
+      "email_exists": "Uživatel s tímto e-mailem již existuje.",
+      "verification_email_subject": "Ověření e-mailu",
+      "verification_email_body": "Dobrý den, děkujeme za registraci. Prosím klikněte na odkaz pro ověření vašeho e-mailu: {{link}}",
+      "verification": {
+        "success": "Váš e-mail byl úspěšně ověřen.",
+        "not_found": "Uživatel nebyl nalezen.",
+        "already_verified": "Váš e-mail již byl ověřen.",
+        "error": "Při ověřování e-mailu došlo k chybě."
+      }
+    },
+    "validation": {
+      "invalid_email": "Neplatný formát emailu",
+      "short_password": "Heslo musí mít alespoň 6 znaků",
+      "short_firstName": "Jméno je příliš krátké",
+      "short_lastName": "Příjmení je příliš krátké"
+    }
+  }
+}
