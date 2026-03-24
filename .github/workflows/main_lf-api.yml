@@ -26,12 +26,18 @@ jobs:
         run: |
           npm ci
           npm run build
-          # Remove dev dependencies and install only production ones to minimize package size
           rm -rf node_modules
           npm install --omit=dev
+          npm prune --production
+          npm cache clean --force
+
 
       - name: Create deployment package
-        run: zip -r deploy.zip . -x "*.git*" "src/*" "test/*" "tsconfig.json" "jest.*" ".idea/*" ".funcignore" "deploy.zip"
+        run: zip -r deploy.zip . -x "*.git*" "src/*" "test/*" "tsconfig.json" "jest.*" ".idea/*" ".funcignore" "deploy.zip" "coverage/*"
+
+      - name: Check zip size
+        run: ls -lh deploy.zip
+
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -39,6 +45,14 @@ jobs:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_E6C62F9A5CC24E54AE9F3D741F1CE886 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_B40B9F1578864D62AE87AAFB44DCF973 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_BA7359258F004FE3B1A7D338A7CBB3F1 }}
+
+      - name: Set Run from Package
+        run: |
+          az functionapp config appsettings set \
+            --resource-group lf-page \
+            --name lf-api \
+            --settings WEBSITE_RUN_FROM_PACKAGE=1
+
 
       - name: Deploy to Azure Functions
         run: |
