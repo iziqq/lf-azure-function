@@ -26,20 +26,17 @@ jobs:
         run: |
           npm ci
           npm run build
-          rm -rf node_modules
-          npm install --omit=dev
-          npm prune --production
-          npm cache clean --force
+
+      - name: Install PROD deps only
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install --omit=dev --production
+
 
 
       - name: Create deployment package
         run: |
-          mkdir deploy-root
-          cp host.json package.json deploy-root/
-          cp -r node_modules deploy-root/
-          cp -r dist/functions/* deploy-root/     # register-seat.js do ROOTu!
-          cd deploy-root && zip -r ../deploy.zip . && cd ..
-
+          zip -r deploy.zip host.json package.json dist/index.js dist/functions/*.js node_modules/ -x "node_modules/.cache/*" "dist/*.map"      
 
       - name: Check zip size
         run: ls -lh deploy.zip
