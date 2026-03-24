@@ -32,11 +32,9 @@ jobs:
           rm -rf node_modules package-lock.json
           npm install --omit=dev --production
 
-
-
       - name: Create deployment package
         run: |
-          zip -r deploy.zip host.json package.json dist/index.js dist/functions/*.js node_modules/ -x "node_modules/.cache/*" "dist/*.map"      
+          zip -r deploy.zip host.json package.json dist/index.js dist/functions/*.js node_modules/ -x "node_modules/.cache/*"
 
       - name: Check zip size
         run: ls -lh deploy.zip
@@ -57,7 +55,7 @@ jobs:
           az functionapp config appsettings set \
             --resource-group lf-page \
             --name lf-api \
-            --settings WEBSITE_RUN_FROM_PACKAGE=1
+            --settings WEBSITE_RUN_FROM_PACKAGE=0
 
 
       - name: Deploy to Azure Functions
