@@ -33,10 +33,18 @@ jobs:
 
 
       - name: Create deployment package
-        run: zip -r deploy.zip . -x "*.git*" "src/*" "test/*" "tsconfig.json" "jest.*" ".idea/*" ".funcignore" "deploy.zip" "coverage/*"
+        run: |
+          zip -r deploy.zip . -x "*.git*" "test/*" "tsconfig.json" "jest.*" ".idea/*" ".funcignore" "deploy.zip" "coverage/*"
 
       - name: Check zip size
         run: ls -lh deploy.zip
+
+      - name: Verify structure
+        run: |
+          echo "=== ROOT ==="
+          unzip -l deploy.zip | head -15
+          echo "=== FUNCTIONS ==="
+          unzip -l deploy.zip | grep -E "(host\.json|api/seats|function\.json)" || echo "❌ CHYBÍ!"
 
 
       - name: Login to Azure
