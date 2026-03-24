@@ -34,19 +34,19 @@ jobs:
 
       - name: Create deployment package
         run: |
-          zip -r deploy.zip . -x "*.git*" "src/*" "test/*" "tsconfig.json" "jest.*" ".idea/*" ".funcignore" "deploy.zip" "coverage/*"
+          mkdir deploy-root
+          cp host.json package.json deploy-root/
+          cp -r node_modules deploy-root/
+          cp -r dist/functions/* deploy-root/     # register-seat.js do ROOTu!
+          cd deploy-root && zip -r ../deploy.zip . && cd ..
+
 
       - name: Check zip size
         run: ls -lh deploy.zip
 
       - name: Verify structure
         run: |
-          echo "ROOT FILES:"
-          unzip -l deploy.zip | head -10
-          echo "FUNCTIONS:"
-          unzip -l deploy.zip | grep "dist/functions/register-seat.js"
-      
-      
+          unzip -l deploy.zip | grep -E "(host\.json|register-seat\.js)" | head -5
 
       - name: Login to Azure
         uses: azure/login@v2

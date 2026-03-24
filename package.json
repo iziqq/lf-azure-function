@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
+  "azureFunctions": {
+    "functions": ["dist/functions/*.js"]
+  },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
