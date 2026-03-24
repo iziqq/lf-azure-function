@@ -34,14 +34,25 @@ jobs:
 
       - name: Create deployment package
         run: |
-          zip -r deploy.zip host.json package.json dist/index.js dist/functions/*.js node_modules/ -x "node_modules/.cache/*"
+          mkdir -p deploy-root
+          cp host.json package.json dist/index.js deploy-root/
+
+          for f in dist/functions/*.js; do
+            func_name=$(basename "$f" .js)
+            mkdir -p "deploy-root/$func_name"
+            cp "$f" "deploy-root/$func_name/index.js"
+            cp "dist/functions/$func_name.json" "deploy-root/$func_name/function.json" 2>/dev/null || true
+          done
+
+          cp -r node_modules deploy-root/
+          cd deploy-root && zip -r ../deploy.zip . -x "*.cache/*"
 
       - name: Check zip size
         run: ls -lh deploy.zip
 
       - name: Verify structure
         run: |
-          unzip -l deploy.zip | grep -E "(host\.json|register-seat\.js)" | head -5
+          unzip -l deploy.zip | grep -E "(host\.json|function\.json)" | head -10
 
       - name: Login to Azure
         uses: azure/login@v2
