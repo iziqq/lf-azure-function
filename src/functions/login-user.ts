@@ -36,7 +36,7 @@ export async function loginUser(request: HttpRequest, context: InvocationContext
 };
 
 app.http('login-user', {
-    methods: ['POST'],
+    methods: ['POST', 'OPTIONS'],
     authLevel: 'anonymous',
     route: 'auth/login',
     handler: (request, context) => withSeatId(request, context, loginUser)

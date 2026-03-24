@@ -7,6 +7,17 @@ export async function withSeatId(
     context: InvocationContext,
     handler: (request: HttpRequest, context: InvocationContext) => Promise<HttpResponseInit>
 ): Promise<HttpResponseInit> {
+    if (request.method === 'OPTIONS') {
+        return {
+            status: 204,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, x-seat-id'
+            }
+        };
+    }
+
     const t = await initI18n();
     const seatId = request.headers.get('x-seat-id');
 
@@ -17,9 +28,25 @@ export async function withSeatId(
             status: 401,
             jsonBody: {
                 message: t.t("auth.seat.missing_or_invalid")
+            },
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, x-seat-id'
             }
         };
     }
 
-    return handler(request, context);
+    const response = await handler(request, context);
+    
+    // Přidání CORS hlaviček ke každé odpovědi
+    return {
+        ...response,
+        headers: {
+            ...response.headers,
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, x-seat-id'
+        }
+    };
 }

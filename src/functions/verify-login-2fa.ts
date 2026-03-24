@@ -48,7 +48,7 @@ export async function verifyLogin2fa(request: HttpRequest, context: InvocationCo
 };
 
 app.http('verify-login-2fa', {
-    methods: ['POST'],
+    methods: ['POST', 'OPTIONS'],
     authLevel: 'anonymous',
     route: 'auth/login/2fa/verify',
     handler: (request, context) => withSeatId(request, context, verifyLogin2fa)

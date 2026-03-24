@@ -32,7 +32,9 @@
       "invalid_code": "Neplatný 2FA kód. Zbývající pokusy: {{attempts}}",
       "too_many_attempts": "Příliš mnoho neúspěšných pokusů. Uživatel je blokován na 30 minut.",
       "success": "Přihlášení úspěšné.",
-      "error": "Při ověřování 2FA kódu došlo k chybě."
+      "error": "Při ověřování 2FA kódu došlo k chybě.",
+      "2fa_email_subject": "Váš 2FA kód pro přihlášení",
+      "2fa_email_body": "Dobrý den, váš kód pro přihlášení je: {{code}}. Kód je platný 15 minut."
     },
     "seat": {
       "invalid_data": "Neplatná data požadavku.",

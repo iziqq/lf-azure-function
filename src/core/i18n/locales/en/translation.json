@@ -32,7 +32,9 @@
       "invalid_code": "Invalid 2FA code. Remaining attempts: {{attempts}}",
       "too_many_attempts": "Too many failed attempts. User is blocked for 30 minutes.",
       "success": "Login successful.",
-      "error": "Error during 2FA verification."
+      "error": "Error during 2FA verification.",
+      "2fa_email_subject": "Your 2FA login code",
+      "2fa_email_body": "Hello, your login code is: {{code}}. The code is valid for 15 minutes."
     },
     "seat": {
       "invalid_data": "Invalid request data.",

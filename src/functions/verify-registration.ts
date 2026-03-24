@@ -39,7 +39,7 @@ export async function verifyRegistration(request: HttpRequest, context: Invocati
 }
 
 app.http('verify-registration', {
-    methods: ['GET'],
+    methods: ['GET', 'OPTIONS'],
     authLevel: 'anonymous',
     route: 'auth/registration/verify',
     handler: (request, context) => withSeatId(request, context, verifyRegistration)

@@ -60,7 +60,7 @@ export async function registerUser(request: HttpRequest, context: InvocationCont
 };
 
 app.http('register-user', {
-    methods: ['POST'],
+    methods: ['POST', 'OPTIONS'],
     authLevel: 'anonymous',
     route: 'auth/register',
     handler: (request, context) => withSeatId(request, context, registerUser)

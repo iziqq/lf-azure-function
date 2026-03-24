@@ -7,6 +7,8 @@ import { AuthSession } from "../auth-session";
 import { Verify2faRequest } from "./dto/verify-2fa.request";
 import { seatService } from "../../../seats/seat.service";
 import { initI18n } from "../../../../core/i18n/i18n";
+import { sendEmail } from "../../../../core/smtp/email.provider";
+import { SupportedLanguages } from "../../../../core/enum/supported-languages.enum";
 
 export class LoginService {
     async login(data: LoginRequest, context: InvocationContext) {
@@ -39,7 +41,8 @@ export class LoginService {
         }
 
         if (user.language) {
-            await t.changeLanguage(user.language);
+            const lng = user.language === SupportedLanguages.CZ ? 'cs' : 'en';
+            await t.changeLanguage(lng);
         }
 
         context.log(`Přihlašování uživatele: ${email}`);
@@ -76,7 +79,17 @@ export class LoginService {
             context.log(`Vytvořena nová session pro: ${email}`);
         }
 
-        context.log(`[SIMULACE EMAILU] Zasílám 2FA kód ${code2fa} na email ${email}`);
+        // Odeslání 2FA kódu na e-mail
+        const subject = t.t("auth.login.2fa_email_subject");
+        const body = t.t("auth.login.2fa_email_body", { code: code2fa });
+        
+        context.log(`E-mail 2FA pro ${email}: Subject: ${subject}, Body: ${body}`);
+
+        await sendEmail({
+            to: email,
+            subject: subject,
+            body: body
+        }, context);
 
         return {
             status: 200,

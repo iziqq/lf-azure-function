@@ -1,7 +1,7 @@
 import { registerService } from '../register.service';
 import { userRepository } from '../../../user.repository';
 import { initI18n } from '../../../../../core/i18n/i18n';
-import { sendEmail } from '../../../../../core/services/email-service';
+import { sendEmail } from '../../../../../core/smtp/email.provider';
 import { InvocationContext } from '@azure/functions';
 
 // Mockování závislostí
@@ -16,7 +16,7 @@ jest.mock('../../../../../core/i18n/i18n', () => ({
     initI18n: jest.fn()
 }));
 
-jest.mock('../../../../../core/services/email-service', () => ({
+jest.mock('../../../../../core/smtp/email.provider', () => ({
     sendEmail: jest.fn()
 }));
 

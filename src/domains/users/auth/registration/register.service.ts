@@ -4,13 +4,14 @@ import { User, UserRole } from "../../user";
 import { userRepository } from "../../user.repository";
 import { hashPassword } from "../../../../core/auth/password-utils";
 import { initI18n } from "../../../../core/i18n/i18n";
-import { sendEmail } from "../../../../core/services/email-service";
+import { sendEmail } from "../../../../core/smtp/email.provider";
+import { SupportedLanguages } from "../../../../core/enum/supported-languages.enum";
 
 export class RegisterService {
     async register(data: RegisterRequest, requestUrl: string, context: InvocationContext) {
         const t = await initI18n();
-        const lng = (data.language as string) || 'cs-CZ';
-        await t.changeLanguage(lng);
+        const lngCode = (data.language as string) === SupportedLanguages.EN ? 'en' : 'cs';
+        await t.changeLanguage(lngCode);
 
         // Zamezit registraci se stejným e-mailem
         const existing = await userRepository.findByEmail(data.email as string);
@@ -36,18 +37,24 @@ export class RegisterService {
         };
 
         const createdUser = await userRepository.create(newUser);
-        context.log(t.t("auth.registration.user_created", { email: createdUser?.email }));
+        if (!createdUser) {
+            throw new Error("auth.registration.error");
+        }
+        
+        context.log(t.t("auth.registration.user_created", { email: createdUser.email }));
 
         // Odeslání ověřovacího e-mailu
-        const verificationLink = `${requestUrl.replace('/auth/register', '/auth/registration/verify')}?userId=${createdUser?.id}`;
+        const verificationLink = `${requestUrl.replace('/auth/register', '/auth/registration/verify')}?userId=${createdUser.id}`;
+        context.log(`Odesílám registrační e-mail uživateli ${createdUser.email} s odkazem: ${verificationLink}`);
+        
         await sendEmail({
-            to: createdUser?.email!,
+            to: createdUser.email,
             subject: t.t("auth.registration.verification_email_subject"),
             body: t.t("auth.registration.verification_email_body", { link: verificationLink })
         }, context);
 
         return {
-            userId: createdUser?.id,
+            userId: createdUser.id,
             message: t.t("auth.registration.success")
         };
     }
@@ -65,7 +72,8 @@ export class RegisterService {
         }
 
         if (user.language) {
-            await t.changeLanguage(user.language);
+            const lngCode = user.language === SupportedLanguages.CZ ? 'cs' : 'en';
+            await t.changeLanguage(lngCode);
         }
 
         if (user.isVerified) {
