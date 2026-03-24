@@ -23,7 +23,6 @@
   },
   "homepage": "https://github.com/iziqq/lf-azure-function#readme",
   "devDependencies": {
-    "@azure/functions": "^4.11.2",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.5.0",
     "@types/nodemailer": "^7.0.11",
@@ -35,6 +34,7 @@
   },
   "dependencies": {
     "@azure/cosmos": "^4.9.2",
+    "@azure/functions": "^4.11.2",
     "@types/bcrypt": "^6.0.0",
     "bcrypt": "^6.0.0",
     "i18next": "^25.10.5",

@@ -1,14 +1,10 @@
-name: Build and deploy Node.js project to Azure Function App - lf-api
+name: Build and deploy to Azure Function App
 
 on:
   push:
     branches:
       - main
   workflow_dispatch:
-
-env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'
-  NODE_VERSION: '22.x'
 
 jobs:
   build-and-deploy:
@@ -18,24 +14,24 @@ jobs:
       contents: read
 
     steps:
-      - name: 'Checkout GitHub Action'
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node ${{ env.NODE_VERSION }}
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: '22.x'
           cache: 'npm'
 
-      - name: 'Install and Build'
+      - name: Install and Build
         run: |
           npm ci
           npm run build
-
-      - name: 'Install production dependencies'
-        run: |
+          # Remove dev dependencies and install only production ones to minimize package size
           rm -rf node_modules
-          npm ci --production
+          npm install --omit=dev
+
+      - name: Create deployment package
+        run: zip -r deploy.zip . -x "*.git*" "src/*" "test/*" "tsconfig.json" "jest.*" ".idea/*" ".funcignore" "deploy.zip"
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -44,9 +40,9 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_B40B9F1578864D62AE87AAFB44DCF973 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_BA7359258F004FE3B1A7D338A7CBB3F1 }}
 
-      - name: 'Deploy to Azure Functions'
-        uses: Azure/functions-action@v1
-        with:
-          app-name: 'lf-api'
-          slot-name: 'Production'
-          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+      - name: Deploy to Azure Functions
+        run: |
+          az functionapp deployment source config-zip \
+            --resource-group lf-page \
+            --name lf-api \
+            --src deploy.zip
