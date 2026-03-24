@@ -4,6 +4,7 @@ import { authRepository } from '../../auth.repository';
 import { comparePassword } from '../../../../../core/auth/password-utils';
 import { InvocationContext } from '@azure/functions';
 import { seatService } from '../../../../seats/seat.service';
+import { sendEmail } from '../../../../../core/smtp/email.provider';
 
 jest.mock('../../../user.repository', () => ({
     userRepository: {
@@ -27,6 +28,10 @@ jest.mock('../../../../seats/seat.service', () => ({
     seatService: {
         assignUserToSeat: jest.fn()
     }
+}));
+
+jest.mock('../../../../../core/smtp/email.provider', () => ({
+    sendEmail: jest.fn()
 }));
 
 describe('LoginService', () => {
@@ -58,7 +63,7 @@ describe('LoginService', () => {
 
             expect(result.status).toBe(200);
             expect(authRepository.create).toHaveBeenCalled();
-            expect(mockContext.log).toHaveBeenCalledWith(expect.stringContaining('Zasílám 2FA kód'));
+            expect(mockContext.log).toHaveBeenCalledWith(expect.stringContaining('E-mail 2FA pro'));
         });
 
         it('should return 401 if user not found', async () => {
@@ -175,7 +180,7 @@ describe('LoginService', () => {
             const result = await loginService.verify2fa(data as any, mockContext);
 
             expect(result.status).toBe(401);
-            expect(result.message).toContain('expired');
+            expect(result.message).toContain('vypršel');
         });
     });
 });

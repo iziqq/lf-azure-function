@@ -49,7 +49,7 @@ describe('RegisterService - verify', () => {
 
         expect(result.status).toBe(200);
         expect(result.message).toBe('auth.registration.verification.success');
-        expect(mockT.changeLanguage).toHaveBeenCalledWith('cs-CZ');
+        expect(mockT.changeLanguage).toHaveBeenCalledWith('cs');
     });
 
     it('should return 404 if user is not found', async () => {
