@@ -4,7 +4,9 @@
   "description": "",
   "main": "dist/index.js",
   "azureFunctions": {
-    "functions": ["dist/functions/*.js"]
+    "functions": [
+      "dist/functions/*.js"
+    ]
   },
   "scripts": {
     "build": "tsc",
@@ -26,6 +28,7 @@
   },
   "homepage": "https://github.com/iziqq/lf-azure-function#readme",
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.5.0",
     "@types/nodemailer": "^7.0.11",
@@ -38,8 +41,7 @@
   "dependencies": {
     "@azure/cosmos": "^4.9.2",
     "@azure/functions": "^4.11.2",
-    "@types/bcrypt": "^6.0.0",
-    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
     "i18next": "^25.10.5",
     "i18next-fs-backend": "^2.6.1",
     "nodemailer": "^8.0.3",
