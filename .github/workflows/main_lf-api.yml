@@ -11,7 +11,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     permissions:
       contents: read
 
@@ -25,13 +25,15 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: 'Install all & Build'
+        shell: pwsh
         run: |
           npm ci
           npm run build
 
       - name: 'Reinstall production deps only'
+        shell: pwsh
         run: |
-          rm -rf node_modules
+          Remove-Item -Recurse -Force node_modules
           npm ci --omit=dev
 
       - name: Upload artifact for deployment job
@@ -46,7 +48,7 @@ jobs:
             node_modules/
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: build
     permissions:
       id-token: write
