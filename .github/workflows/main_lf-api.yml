@@ -7,12 +7,13 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'
   NODE_VERSION: '20.x'
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # rychlejší a levnější
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: 'Checkout GitHub Action'
@@ -23,22 +24,26 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 'Resolve Project Dependencies Using Npm'
+      - name: 'Install all & Build'
         run: |
-          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-          npm install
-          npm run build --if-present
-          npm run test --if-present
-          popd
+          npm ci
+          npm run build
 
-      - name: 'Remove node_modules before upload'  # <-- KLÍČOVÝ FIX
-        run: rm -rf node_modules
+      - name: 'Reinstall production deps only'
+        run: |
+          rm -rf node_modules
+          npm ci --omit=dev
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: |
+            dist/
+            host.json
+            package.json
+            package-lock.json
+            node_modules/
 
   deploy:
     runs-on: ubuntu-latest
@@ -67,6 +72,5 @@ jobs:
         with:
           app-name: 'lf-api'
           slot-name: 'Production'
-          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          scm-do-build-during-deployment: true   # Azure nainstaluje node_modules samo
-          enable-oryx-build: true
+          package: '.'
+          scm-do-build-during-deployment: false
